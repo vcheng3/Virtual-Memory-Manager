@@ -1,0 +1,34 @@
+Amrit Pal Singh 	asingh42@buffalo.edu						
+Sahil Dua   		sahildua@buffalo.edu						
+Vincent Cheng 		vcheng3@buffalo.edu							
+
+b. The data structures you used for the implementation of the different page
+replacement algorithms.
+
+1. Optimal 
+We have used a hashmap (unordered map) to store all the occurances of a page using the input string. The key is the unique page number and value is all the occurances of that page as a list (vector). We do this while we are traversing the input string so no extra loop is added for creation of the hashmap. This makes a lot of operations like search and delete O(1) instead of O(n). For each new request which requires a replacement, we compare the first element in the list of pages in the frame and pick the highest one - ie the longest occuring in the future to be replaced. This way we do not have to traverse the list of each page or traverse through the remaining future requests and all operations are inside the main loop with time complexit O(1).
+
+2. FIFO 
+We have used a vector of requests which simply adds requests to one end and removes from the other end so that the oldest requests are always replaced first.  
+
+3. LFU 
+We have used a struct node which has three elements - value , frequency and a variable to keep track of the arrival order. We have used a vector of these nodes to act as the memory frame. In case of a replacement, the node with the lowest frequency is removed. In case of a tie, the variable keeping a track of the arrival order is used to compare the nodes with equal frequencies. This variable is simply a integer acting as a logical clock to keep track of the age of the requests - in case of equal frequencies - it picks the page node with the highest value of the logical clock. 
+
+4. LRU-Stack 
+We have used a vector acting like a stack - which with each hit adjusts and places the page which is hit at the top of the stack. It removes from the bottom of the stack.
+
+5. LRU-Clock
+We have used a struct node which has contains the page number and a integer acting as the reference bit - which can take values zero and one. Also a integer acting as the victim pointer , pointing to the index of the memory frame which rotates in clock wise manner over the memory frame to select the next victim. 
+
+6. LRU-REF8
+We have used a similiar struct node to represent the page in the memory frame as the clock algorithm. Here instead of a bit, we have used an integer which stores the value derived from rotating the 8 bits. Also, in addition a integer acting as a logical clock, similar to LFU is used to handle tie cases. The implementation first fetches value of the 8 bits and then calculates effective value after a hit/miss and shifting to the right and then updates this value in the page node. For example, for the first hit, we need to change the highest bit to 1 - so effective value would be 128. On the next update - hit or miss , the effective value can be either 64 on shifting to the right in case of a miss or 192 in case of a hit. 
+
+c. Briefly critique your design, pointing out advantages and disadvantages in your
+design choices.
+We have tried to minimise any form of loops by using HashMaps and lists wherever possible. Also we have removed and accessed a the begin and end element. Both these design changes help to reduce the time complexity to O(1) from possibly one or more loops. Making a HashMap initially without any additional loop helps the algorithm to access and compare the next occurance of the page only by accessing the first element of the list. This helps our algorithm to scale very well if the input is very large. 
+
+We have added some extra space complexity while creating these data structures. Also, while theoretically the search , delete , update function calls are O(1), however they take some constant fixed time. So on a small input data string, the effeciency can not be always visibly seen - rather the constant times can add up to a running time which can not be ignored. Also the library implementation for unordered_map is slow for older versions of g++ compiler. 
+
+d. Please cite any online or offline resources you consulted while preparing your
+project, other than the course materials.
+Wikipedia and some articles explaining boundary cases of each algorithm. 
